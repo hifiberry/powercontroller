@@ -18,7 +18,7 @@ pyupdi -c /dev/ttyAMA0 -d mega808 -fr
 
 Just copy the compiled firmware to the Pi using scp. It should be an ".hex" file.
 
-# Program firmware
+## Program firmware
 
 ```
 pyupdi -c /dev/ttyAMA0 -d mega808 -f firmware.hex
