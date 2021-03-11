@@ -13,8 +13,8 @@
 #define REG_ROTARYCHANGE          0x0c // R/W - last change of the rotary (will be set to 0 after reading the register)
 
 // put some stuff at the end of the table that might grow with the time
-#define REG_STORE                 0xfb // W   - store register set to EEPROM (not yet implemented)
-#define REG_RESTORE               0x0c // W   - restore register set from EEPROM
+#define REG_STORE                 0xfb // W   - store register set to EEPROM 
+#define REG_RESTORE               0xfc // W   - restore register set from EEPROM
 #define REG_VERSION_LSB           0xfd // R   - program version LSB
 #define REG_VERSION_MSB           0xfe // R   - program version MSB
 
@@ -26,6 +26,7 @@
 #define LEDMODE_PULSING           1
 #define LEDMODE_BLINK             2
 #define LEDMODE_FLASH             3
+#define LEDMODE_OFF               4
 
 // Button 
 #define BUTTONMODE_SHORT_LONG_PRESS   0

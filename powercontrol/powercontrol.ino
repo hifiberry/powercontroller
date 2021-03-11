@@ -24,10 +24,8 @@
 #define I2CADDR                   0x77
 
 
-
 // Power down long press time in seconds
 #define DEFAULT_REG_BUTTONPOWEROFFTIME   5
-
 
 unsigned int tmp = 0;
 unsigned int Aold = 0;
@@ -46,6 +44,32 @@ RotaryEncoder rotary(ENCODERA, ENCODERB, ROTARYSWITCH);
 void toggle(int pin) {
   digitalWrite(pin, !digitalRead(pin));
 }
+
+
+// read register set from EEPROM
+void read_eeprom() {
+  int regno;
+  for (regno=0; regno<MAXREG; regno++) {
+    regs[regno]=EEPROM.read(regno);
+  }
+  
+  // version isn't read from EEPROM
+  regs[REG_VERSION_LSB] = VERSION && 0xff;
+  regs[REG_VERSION_MSB] = (VERSION >> 8) && 0xff;
+  
+  regs[REG_RESTORE] = 0x00;
+  regs[1]=LEDMODE_STATIC;
+  regs[2]=0xff;
+}
+
+void write_eeprom() {
+  int regno;
+  for (regno=0; regno<MAXREG; regno++) {
+    EEPROM.write(regno, regs[regno]);
+  }
+  regs[REG_STORE] = 0;
+}
+
 
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
@@ -92,18 +116,16 @@ void ISRswitch() {
   rotary.switchUpdate();
   
   // always power on if the switch is pressed
-  regs[REG_POWERSWITCH]=1;
+  if (rotary.getSwitchState() == rotary.SW_ON) {
+    regs[REG_POWERSWITCH]=1;
+  }
 
   notify();
 }
 
 
+
 void setup() {
-  // Store version
-  
-  regs[REG_VERSION_LSB] = VERSION && 0xff;
-  regs[REG_VERSION_MSB] = (VERSION >> 8) && 0xff;
-  
   // Power pin
   regs[REG_POWERSWITCH] = 1;
   pinMode(POWERSWITCH_PIN, OUTPUT);
@@ -145,18 +167,10 @@ void setup() {
   // interrupt pin
   pinMode(INTERRUPT_PIN, OUTPUT);
 
-  // default registers
-  regs[REG_ROTARYVALUE]=128;
-  regs[REG_BUTTONPOWEROFFTIME]=DEFAULT_REG_BUTTONPOWEROFFTIME;
-
-  // read register from EEPROM
-  //for (int i=0; i<MAXREG; i++) {
-  //  EEPROM.get(regs[i], i);
-  //}
-
+  // read defaults from EEPROM
+  read_eeprom();
 }
 
-int epOld = 0;
 int ep = 0;
 
 int led_loop = 0;
@@ -209,7 +223,7 @@ void loop() {
     }
   } else {
     if (currentSwitchState == rotary.SW_ON) {
-      if ( (regs[REG_POWEROFFTIMER] > 0) && (startPressed + 1000*regs[REG_POWEROFFTIMER] < millis())) {
+      if ( (regs[REG_BUTTONPOWEROFFTIME] > 0) && (startPressed + 1000*regs[REG_BUTTONPOWEROFFTIME] < millis())) {
         power_off();
       } 
     }
@@ -229,6 +243,8 @@ void loop() {
       multiplier = blink();
     } else if (regs[REG_LEDMODE] == LEDMODE_FLASH) {
       multiplier = flash();
+    } else if (regs[REG_LEDMODE] == LEDMODE_OFF) {
+      multiplier=0;
     }
     analogWrite(LEDR, 255-(regs[REG_LEDR]*multiplier)/128);
     analogWrite(LEDG, 255-(regs[REG_LEDG]*multiplier)/128);
@@ -255,6 +271,15 @@ void loop() {
     power_off();
   }
 
-  
+  // check for EEPROM store/restore commands
+  if (regs[REG_STORE] != 0) {
+    write_eeprom();
+  } 
+
+  if (regs[REG_RESTORE] != 0) {
+    read_eeprom();
+    regs[1]=0;
+  }
+
   delay(20);
 }
