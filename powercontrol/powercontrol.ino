@@ -8,7 +8,7 @@
 #include "registers.h"
 #include "FR_RotaryEncoder.h"
 
-#define VERSION                   1
+#define VERSION                   2
 
 #define LEDB                      PIN_PD0
 #define LEDG                      PIN_PD1
