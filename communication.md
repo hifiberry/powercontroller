@@ -19,11 +19,21 @@ Default I2C address is 0x77.
 i2cget -y -f 1 0x77 1
 ```
 
-### Set LED to flashing blue
+#### Set LED to flashing blue
 ```
-i2cset -y -f 1 0x77 1 3  # mode: blinking
-i2cset -y -f 1 0x77 2 0  # no red
-i2cset -y -f 1 0x77 3 0  # no green
-i2cset -y -f 1 0x77 4 0xff  # but blue
+i2cset -y -f 1 0x77 0x01 3  # mode: flashing
+i2cset -y -f 1 0x77 0x02 0x00  # R
+i2cset -y -f 1 0x77 0x03 0x00  # G
+i2cset -y -f 1 0x77 0x04 0xff  # B
 ```
+
+#### Turn off the system in 20 seconds, with a blinking LED until the system has been stopped
+```
+i2cset -y -f 1 0x77 0x01 2     # mode: blinking
+i2cset -y -f 1 0x77 0x02 0xff  # R
+i2cset -y -f 1 0x77 0x03 0x00  # G
+i2cset -y -f 1 0x77 0x04 0x00  # B
+i2cset -y -f 1 0x77 0x09 20    # power off timer
+```
+
 
