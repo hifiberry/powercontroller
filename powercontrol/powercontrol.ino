@@ -58,8 +58,6 @@ void read_eeprom() {
   regs[REG_VERSION_MSB] = (VERSION >> 8) && 0xff;
   
   regs[REG_RESTORE] = 0x00;
-  regs[1]=LEDMODE_STATIC;
-  regs[2]=0xff;
 }
 
 void write_eeprom() {
