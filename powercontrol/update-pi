@@ -1,5 +1,5 @@
 #!/bin/sh
-sshpass -p hifiberry scp powercontrol.ino_atmega808_4000000L.hex root@$1:firmware.hex
+sshpass -p hifiberry scp powercontrol.ino_atmega808_*L.hex root@$1:firmware.hex
 sshpass -p hifiberry ssh root@$1 ls
 sshpass -p hifiberry ssh root@$1 pyupdi -c /dev/ttyAMA0 -d mega808 -f firmware.hex
 sshpass -p hifiberry ssh root@$1 rm firmware.hex

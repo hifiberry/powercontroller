@@ -48,7 +48,7 @@
 #define DEFAULT_WRAP_MODE false  // Do not wrap-around
 
 // Set true to invert rotational direction
-#define DEFAULT_ROTARY_LOGIC false
+#define DEFAULT_ROTARY_LOGIC true
 
 // Sets the sensitivity of rotation
 //   false Two clicks are required per count
@@ -108,6 +108,9 @@ public:
 
   // Returns the current position of the rotary encoder
   int getPosition();
+
+  // Returns the change of the rotary encoder since the last call of this function
+  int getChange();
 
   // Sets a starting position
   void setPosition(int newPosition);
@@ -182,6 +185,7 @@ private:
     // should be volatile
   volatile int direction = NOT_MOVED;
   volatile int rotaryPosition = 0; 
+  volatile int rotaryChange = 0; 
   volatile int a0 = ROTARY_POSITION_UNKNOWN;
   volatile int b0 = ROTARY_POSITION_UNKNOWN;
 

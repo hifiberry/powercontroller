@@ -8,7 +8,7 @@
 #include "registers.h"
 #include "FR_RotaryEncoder.h"
 
-#define VERSION                   2
+#define VERSION                   3
 
 #define LEDB                      PIN_PD0
 #define LEDG                      PIN_PD1
@@ -54,8 +54,8 @@ void read_eeprom() {
   }
   
   // version isn't read from EEPROM
-  regs[REG_VERSION_LSB] = VERSION && 0xff;
-  regs[REG_VERSION_MSB] = (VERSION >> 8) && 0xff;
+  regs[REG_VERSION_LSB] = VERSION & 0xff;
+  regs[REG_VERSION_MSB] = (VERSION >> 8) & 0xff;
   
   regs[REG_RESTORE] = 0x00;
 }
@@ -104,7 +104,8 @@ void notify() {
 // Interrupt handling routine for the rotary
 void ISRrotary() {
    rotary.rotaryUpdate();
-   regs[REG_ROTARYVALUE]=rotary.getPosition() && 0xff;
+   regs[REG_ROTARYVALUE]=rotary.getPosition() & 0xff;
+   regs[REG_ROTARYCHANGE] += rotary.getChange();
    toggle(LEDR);
    notify();
 }
