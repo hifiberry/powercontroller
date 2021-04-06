@@ -31,7 +31,8 @@
 // Button 
 #define BUTTONMODE_SHORT_LONG_PRESS   0
 #define BUTTONMODE_PRESS_RELEASE      1
-#define BUTTON_SHORTPRESS             0
-#define BUTTON_LONGPRESS              1
-#define BUTTON_PRESS                  2
-#define BUTTON_RELEASE                3
+#define BUTTON_NOTHING                0
+#define BUTTON_SHORTPRESS             1
+#define BUTTON_LONGPRESS              2
+#define BUTTON_PRESS                  3
+#define BUTTON_RELEASE                4
