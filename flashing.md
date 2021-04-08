@@ -8,6 +8,14 @@ On HiFiBerryOS, you first need to enable the serial püort that's used to progra
 /opt/hifiberry/bin/enable-updi
 ```
 
+This will disable the onboard Bluetoot controller! To re-enable it after flashing the firmware,
+remove the line
+```
+dtoverlay=disable-bt
+```
+
+from /boot/config.txt again.
+
 ## Check that the communication with the controller works
 
 ```
