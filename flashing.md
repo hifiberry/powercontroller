@@ -1,8 +1,13 @@
 # Flashing firmware to the power controller
 
+## Power supply
+
+During the flashing process, the power controller will disable power to the Pi. Therefore, it's important
+that during the flashing, power is directly connected to the Pi, not via the power controller.
+
 ## Enable serial port
 
-On HiFiBerryOS, you first need to enable the serial püort that's used to program the power controller
+On HiFiBerryOS, you first need to enable the serial port that's used to program the power controller
 
 ```
 /opt/hifiberry/bin/enable-updi
