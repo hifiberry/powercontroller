@@ -82,6 +82,15 @@ int RotaryEncoder::getPosition()
   return rotaryPosition;
 }
 
+int RotaryEncoder::getChange()
+{
+  int res = rotaryChange;
+  rotaryChange=0;
+  return res;
+}
+
+
+
 void RotaryEncoder::setPosition(int newPosition)
 {
   rotaryPosition = newPosition;
@@ -174,9 +183,11 @@ void RotaryEncoder::changeRotaryValue(bool leftRight)
 
   if (leftRight) {
     nextRotaryPosition = rotaryPosition + rotationalStep;
+    rotaryChange += rotationalStep;
     direction = CW;
   } else {
     nextRotaryPosition = rotaryPosition - rotationalStep;
+    rotaryChange -= rotationalStep;
     direction = CCW;
   }
 

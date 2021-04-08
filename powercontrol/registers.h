@@ -22,16 +22,17 @@
 #define MAXREG                    REG_OVERFLOW
 
 // LED control
-#define LEDMODE_STATIC            0
-#define LEDMODE_PULSING           1
-#define LEDMODE_BLINK             2
-#define LEDMODE_FLASH             3
-#define LEDMODE_OFF               4
+#define LEDMODE_STATIC                0
+#define LEDMODE_PULSING               1
+#define LEDMODE_BLINK                 2
+#define LEDMODE_FLASH                 3
+#define LEDMODE_OFF                   4
 
 // Button 
 #define BUTTONMODE_SHORT_LONG_PRESS   0
 #define BUTTONMODE_PRESS_RELEASE      1
-#define BUTTON_SHORTPRESS             0
-#define BUTTON_LONGPRESS              1
-#define BUTTON_PRESS                  2
-#define BUTTON_RELEASE                3
+#define BUTTON_NOTHING                0
+#define BUTTON_SHORTPRESS             1
+#define BUTTON_LONGPRESS              2
+#define BUTTON_PRESS                  3
+#define BUTTON_RELEASE                4
