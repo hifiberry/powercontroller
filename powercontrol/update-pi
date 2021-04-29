@@ -1,6 +1,9 @@
 #!/bin/sh
 sshpass -p hifiberry scp powercontrol.ino_atmega808_*L.hex root@$1:firmware.hex
 sshpass -p hifiberry ssh root@$1 ls
+sshpass -p hifiberry ssh root@$1 i2cset -y -f 1 0x77 0x0e 0 # disable interrupt pin for programming
+sshpass -p hifiberry ssh root@$1 systemctl stop audiocontrol2
 sshpass -p hifiberry ssh root@$1 pyupdi -c /dev/ttyAMA0 -d mega808 -f firmware.hex
 sshpass -p hifiberry ssh root@$1 rm firmware.hex
 sshpass -p hifiberry ssh root@$1 i2cset -y -f 1 0x77 0x03 0xff 
+sshpass -p hifiberry ssh root@$1 systemctl start audiocontrol2
