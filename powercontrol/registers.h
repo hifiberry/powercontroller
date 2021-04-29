@@ -11,6 +11,7 @@
 #define REG_BUTTONPOWEROFFTIME    0x0a // R/W - how long must the button be pressed to power off the system
 #define REG_ROTARYVALUE           0x0b // R/W - current state of the rotary control
 #define REG_ROTARYCHANGE          0x0c // R/W - last change of the rotary (will be set to 0 after reading the register)
+#define REG_INTERRUPTPIN          0x0e // R/W - what pin is used for the interrupt signal
 
 // put some stuff at the end of the table that might grow with the time
 #define REG_STORE                 0xfb // W   - store register set to EEPROM 

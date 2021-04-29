@@ -8,7 +8,7 @@
 #include "registers.h"
 #include "FR_RotaryEncoder.h"
 
-#define VERSION                   3
+#define VERSION                   4
 
 #define LEDB                      PIN_PD0
 #define LEDG                      PIN_PD1
@@ -18,7 +18,10 @@
 #define ENCODERB                  PIN_PC1
 #define ROTARYSWITCH              PIN_PC2
 
-#define INTERRUPT_PIN             PIN_PA1
+#define INTERRUPT_PIN1            PIN_PA1
+#define INTERRUPT_PIN2            PIN_PF0
+#define INTERRUPT_PIN3            PIN_PF1
+#define INTERRUPT_PIN3            PIN_PA1
 #define POWERSWITCH_PIN           PIN_PA0
 
 #define I2CADDR                   0x77
@@ -42,10 +45,42 @@ unsigned long shutdowntime = 0;
 int lastSwitchState = 0;
 unsigned long startPressed = 0;
 
+int interruptPin = -1;
+
 RotaryEncoder rotary(ENCODERA, ENCODERB, ROTARYSWITCH);
 
 void toggle(int pin) {
   digitalWrite(pin, !digitalRead(pin));
+}
+
+// Reconfigure interrupt pin
+void reconfigure_int() {
+  interruptPin=-1;
+  
+  if (regs[REG_INTERRUPTPIN]>3) {
+    regs[REG_INTERRUPTPIN]=0;
+  }
+
+  pinMode(INTERRUPT_PIN1, INPUT);
+  pinMode(INTERRUPT_PIN2, INPUT);
+  pinMode(INTERRUPT_PIN3, INPUT);
+  digitalWrite(INTERRUPT_PIN1, LOW);
+  digitalWrite(INTERRUPT_PIN2, LOW);
+  digitalWrite(INTERRUPT_PIN3, LOW);
+
+  if (regs[REG_INTERRUPTPIN]==1) {
+    pinMode(INTERRUPT_PIN1, OUTPUT);
+    interruptPin=INTERRUPT_PIN1;
+  } else if (regs[REG_INTERRUPTPIN]==2) {
+    pinMode(INTERRUPT_PIN2, OUTPUT);
+    interruptPin=INTERRUPT_PIN2;
+  } else if (regs[REG_INTERRUPTPIN]==3) {
+    pinMode(INTERRUPT_PIN3, OUTPUT);
+    interruptPin=INTERRUPT_PIN3;
+  }
+
+  digitalWrite(LEDR,1);
+  delay(100);
 }
 
 
@@ -67,7 +102,8 @@ void read_eeprom() {
 
   // reset RESTORE register to signal the restore is finished
   regs[REG_RESTORE] = 0x00;
-  
+
+  reconfigure_int();
 }
 
 void write_eeprom() {
@@ -77,7 +113,6 @@ void write_eeprom() {
   }
   regs[REG_STORE] = 0;
 }
-
 
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
@@ -92,6 +127,10 @@ void receiveI2C(int bytes) {
   // If there are more than 1 byte, then the master is writing to the slave
   if (bytes > 1) {
     regs[i2c_register] = Wire.read();
+  }
+
+  if (i2c_register == REG_INTERRUPTPIN ) {
+    reconfigure_int();
   }
 }
 
@@ -108,7 +147,9 @@ void sendI2C() {
 
 void notify() {
   // toggle notify pin
-  toggle(INTERRUPT_PIN);
+  if (interruptPin>0) {
+    toggle(interruptPin);
+  }
 }
 
 // Interrupt handling routine for the rotary
@@ -116,7 +157,6 @@ void ISRrotary() {
    rotary.rotaryUpdate();
    regs[REG_ROTARYVALUE]=rotary.getPosition() & 0xff;
    regs[REG_ROTARYCHANGE] += rotary.getChange();
-   toggle(LEDR);
    notify();
 }
 
@@ -151,7 +191,6 @@ void ISRswitch() {
       } else {
         // long press will be handled in the main loop as we don't wait for the release
       }
-      
     }
   }
 
@@ -199,8 +238,6 @@ void setup() {
   Wire.onReceive(receiveI2C);
   Wire.onRequest(sendI2C);
 
-  // interrupt pin
-  pinMode(INTERRUPT_PIN, OUTPUT);
 
   // read defaults from EEPROM
   read_eeprom();
