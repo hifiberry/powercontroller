@@ -8,7 +8,7 @@
 #include "registers.h"
 #include "FR_RotaryEncoder.h"
 
-#define VERSION                   4
+#define VERSION                   5
 
 #define LEDB                      PIN_PD0
 #define LEDG                      PIN_PD1
@@ -18,10 +18,6 @@
 #define ENCODERB                  PIN_PC1
 #define ROTARYSWITCH              PIN_PC2
 
-#define INTERRUPT_PIN1            PIN_PA1
-#define INTERRUPT_PIN2            PIN_PF0
-#define INTERRUPT_PIN3            PIN_PF1
-#define INTERRUPT_PIN3            PIN_PA1
 #define POWERSWITCH_PIN           PIN_PA0
 
 #define I2CADDR                   0x77
@@ -46,6 +42,7 @@ int lastSwitchState = 0;
 unsigned long startPressed = 0;
 
 int interruptPin = -1;
+volatile byte updateInt = 0;
 
 RotaryEncoder rotary(ENCODERA, ENCODERB, ROTARYSWITCH);
 
@@ -79,8 +76,6 @@ void reconfigure_int() {
     interruptPin=INTERRUPT_PIN3;
   }
 
-  digitalWrite(LEDR,1);
-  delay(100);
 }
 
 
@@ -103,7 +98,10 @@ void read_eeprom() {
   // reset RESTORE register to signal the restore is finished
   regs[REG_RESTORE] = 0x00;
 
-  reconfigure_int();
+  // don't store int pin, we might have problems programming the
+  // controller otherwise
+  regs[REG_INTERRUPTPIN] = 0;
+  updateInt=1;
 }
 
 void write_eeprom() {
@@ -130,7 +128,7 @@ void receiveI2C(int bytes) {
   }
 
   if (i2c_register == REG_INTERRUPTPIN ) {
-    reconfigure_int();
+    updateInt=1;
   }
 }
 
@@ -357,6 +355,12 @@ void loop() {
   if (regs[REG_STORE] != 0) {
     write_eeprom();
   } 
+
+  // Check if interrupt pin has been changes
+  if (updateInt) {
+    reconfigure_int();
+    updateInt=0;
+  }
 
   if (regs[REG_RESTORE] != 0) {
     read_eeprom();
