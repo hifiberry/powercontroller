@@ -20,9 +20,9 @@
 #define REG_VERSION_MSB           0xfe // R   - program version MSB
 
 // interrupt pins - uses to signal that a button has been pressed or the controller has been rotated
-#define INTERRUPT_PIN1            PIN_PA1
-#define INTERRUPT_PIN2            PIN_PF0
-#define INTERRUPT_PIN3            PIN_PF1
+#define INTERRUPT_PIN1            PIN_PA1   // GPIO4 on Pi
+#define INTERRUPT_PIN2            PIN_PF0   // GPIO15 on Pi
+#define INTERRUPT_PIN3            PIN_PF1   // GPIO14 on Pi
 
 #define REG_OVERFLOW              0xff  // unused
 #define MAXREG                    REG_OVERFLOW
