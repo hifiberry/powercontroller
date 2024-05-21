@@ -23,16 +23,33 @@ from /boot/config.txt again.
 
 ## Check that the communication with the controller works
 
+### Older HBOS Releases
 ```
 pyupdi -c /dev/ttyAMA0 -d mega808 -fr
+```
+
+### HBOS64
+```
+pymcuprog ping -t uart -d atmega808 -u /dev/ttyAMA0  --uart-timeout 2
 ```
 
 ## Copy the firmware
 
 Just copy the compiled firmware to the Pi using scp. It should be an ".hex" file.
 
+Or just get the firmware from Github:
+```
+curl -L -o powercontrol.hex https://github.com/hifiberry/powercontroller/releases/download/r5/powercontrol.ino_atmega808_16000000L.hex
+```
+
 ## Program firmware
 
+### Older HBOS Releases
 ```
 pyupdi -c /dev/ttyAMA0 -d mega808 -f firmware.hex
+```
+
+### HBOS64
+```
+pymcuprog  -t uart -d atmega808 -u /dev/ttyAMA0  --uart-timeout 2 -f powercontrol.hex  write
 ```
