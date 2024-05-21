@@ -51,5 +51,5 @@ pyupdi -c /dev/ttyAMA0 -d mega808 -f firmware.hex
 
 ### HBOS64
 ```
-pymcuprog  -t uart -d atmega808 -u /dev/ttyAMA0  --uart-timeout 2 -f powercontrol.hex  write
+pymcuprog  -t uart -d atmega808 -u /dev/ttyAMA0  --uart-timeout 2 -f powercontrol.hex --erase --verify write
 ```
